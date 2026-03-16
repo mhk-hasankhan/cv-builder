@@ -1,4 +1,5 @@
-# CV Builder — Full-Stack CV & Cover Letter App
+# CV Builder || CV & Cover Letter App
+LIVE: https://cv-builder-co.netlify.app/
 
 A professional, locally-run CV and Cover Letter builder with real-time preview, multiple templates, PDF/DOCX export, and drag-and-drop section ordering.
 
