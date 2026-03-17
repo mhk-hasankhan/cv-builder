@@ -1,9 +1,11 @@
 import axios from 'axios'
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: API_URL,
   timeout: 30000
-})
+});
 
 api.interceptors.response.use(
   r => r.data,
@@ -28,10 +30,10 @@ export const coverLettersApi = {
 }
 
 export const exportApi = {
-  pdf: id => `${import.meta.env.VITE_API_URL}/export/pdf/${id}`,
-  docx: id => `${import.meta.env.VITE_API_URL}/export/docx/${id}`,
-  clPdf: id => `${import.meta.env.VITE_API_URL}/export/cover-letter/pdf/${id}`,
-  clDocx: id => `${import.meta.env.VITE_API_URL}/export/cover-letter/docx/${id}`,
+  pdf: id => `${API_URL}/export/pdf/${id}`,
+  docx: id => `${API_URL}/export/docx/${id}`,
+  clPdf: id => `${API_URL}/export/cover-letter/pdf/${id}`,
+  clDocx: id => `${API_URL}/export/cover-letter/docx/${id}`,
 }
 
 export const uploadApi = {
