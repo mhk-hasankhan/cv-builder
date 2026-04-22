@@ -14,7 +14,7 @@ LIVE: https://cv-builder-co.netlify.app/
 
 A professional, locally-run CV and Cover Letter builder with real-time preview, multiple templates, PDF/DOCX export, and drag-and-drop section ordering.
 
-## ✨ Features
+## Features
 
 - **Dashboard** — Manage multiple CVs and cover letters
 - **3 CV Templates** — Modern, Classic, Sidebar (ATS-friendly options)
@@ -181,3 +181,22 @@ SQLite database is stored at `backend/database/cvbuilder.db`. This file is creat
 ## 🖨 Print
 
 Click the print button in the CV builder. The preview renders clean A4-sized output using `@media print` styles.
+
+## 🧯 Troubleshooting / FAQ
+
+### “Port already in use”
+Something is already using 5173 or 3001.
+- Change ports in `.env` (or stop the process using that port), then restart.
+
+### “Frontend can’t reach backend” / network errors
+- Ensure backend is running on `http://localhost:3001`
+- Ensure `VITE_API_BASE_URL` matches the backend URL
+- Restart the frontend after changing `frontend/.env`
+
+### PDF/DOCX download doesn’t work
+- Check backend logs for export route errors
+- Confirm the CV id exists and the export endpoint returns `200`
+
+### Where is my data stored?
+- Locally in `backend/database/cvbuilder.db` (SQLite)
+
