@@ -1,4 +1,15 @@
 # CV Builder || CV & Cover Letter App
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+<!-- Optional (enable after you add CI) -->
+<!-- [![CI](https://github.com/mhk-hasankhan/cv-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/mhk-hasankhan/cv-builder/actions/workflows/ci.yml) -->
+<!-- Optional tech badges -->
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=000)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=fff)
+![Express](https://img.shields.io/badge/Express-Node.js-000?logo=express&logoColor=fff)
+![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=fff)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwindcss&logoColor=fff)
+
 LIVE: https://cv-builder-co.netlify.app/
 
 A professional, locally-run CV and Cover Letter builder with real-time preview, multiple templates, PDF/DOCX export, and drag-and-drop section ordering.
