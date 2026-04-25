@@ -7,27 +7,25 @@ const api = axios.create({
   timeout: 30000
 });
 
-<<<<<<< HEAD
+// Attach auth token to every request
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('auth_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
-=======
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
 api.interceptors.response.use(
   r => r.data,
   e => Promise.reject(e.response?.data || e)
-)
+);
 
-<<<<<<< HEAD
+// Auth APIs
 export const authApi = {
   googleSignIn: credential => api.post('/auth/google', { credential }),
-}
+};
 
-=======
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
 export const cvsApi = {
   list: () => api.get('/cvs'),
   get: id => api.get(`/cvs/${id}`),
@@ -35,7 +33,7 @@ export const cvsApi = {
   update: (id, data) => api.put(`/cvs/${id}`, data),
   delete: id => api.delete(`/cvs/${id}`),
   duplicate: id => api.post(`/cvs/${id}/duplicate`),
-}
+};
 
 export const coverLettersApi = {
   list: () => api.get('/cover-letters'),
@@ -43,26 +41,28 @@ export const coverLettersApi = {
   create: data => api.post('/cover-letters', data),
   update: (id, data) => api.put(`/cover-letters/${id}`, data),
   delete: id => api.delete(`/cover-letters/${id}`),
-}
+};
 
 export const exportApi = {
   pdf: id => `${API_URL}/export/pdf/${id}`,
   docx: id => `${API_URL}/export/docx/${id}`,
   clPdf: id => `${API_URL}/export/cover-letter/pdf/${id}`,
   clDocx: id => `${API_URL}/export/cover-letter/docx/${id}`,
-}
+};
 
 export const uploadApi = {
   photo: file => {
-    const form = new FormData()
-    form.append('photo', file)
-    return api.post('/upload/photo', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+    const form = new FormData();
+    form.append('photo', file);
+    return api.post('/upload/photo', form, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   }
-}
+};
 
 export const shareApi = {
   generate: id => api.post(`/share/generate/${id}`),
   get: token => api.get(`/share/${token}`),
-}
+};
 
-export default api
+export default api;
