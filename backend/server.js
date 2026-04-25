@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 require('dotenv').config();
+=======
+>>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -24,7 +27,10 @@ const db = require('./database/db');
 db.initialize();
 
 // Routes
+<<<<<<< HEAD
 app.use('/api/auth', require('./routes/auth'));
+=======
+>>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
 app.use('/api/cvs', require('./routes/cvs'));
 app.use('/api/cover-letters', require('./routes/coverLetters'));
 app.use('/api/export', require('./routes/export'));
