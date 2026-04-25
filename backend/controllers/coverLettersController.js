@@ -23,11 +23,14 @@ function parseCL(row) {
 exports.list = (req, res) => {
   try {
     const db = getDb();
-<<<<<<< HEAD
-    const rows = db.prepare('SELECT id, title, cv_id, created_at, updated_at FROM cover_letters WHERE user_id = ? ORDER BY updated_at DESC').all(req.user.id);
-=======
-    const rows = db.prepare('SELECT id, title, cv_id, created_at, updated_at FROM cover_letters ORDER BY updated_at DESC').all();
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+    const rows = db
+      .prepare(`
+        SELECT id, title, cv_id, created_at, updated_at 
+        FROM cover_letters 
+        WHERE user_id = ? 
+        ORDER BY updated_at DESC
+      `)
+      .all(req.user.id);
     res.json(rows);
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -37,11 +40,10 @@ exports.list = (req, res) => {
 exports.getOne = (req, res) => {
   try {
     const db = getDb();
-<<<<<<< HEAD
-    const row = db.prepare('SELECT * FROM cover_letters WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
-=======
-    const row = db.prepare('SELECT * FROM cover_letters WHERE id = ?').get(req.params.id);
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+    const row = db
+      .prepare('SELECT * FROM cover_letters WHERE id = ? AND user_id = ?')
+      .get(req.params.id, req.user.id);
+
     if (!row) return res.status(404).json({ error: 'Cover letter not found' });
     res.json(parseCL(row));
   } catch (e) {
@@ -54,11 +56,12 @@ exports.create = (req, res) => {
     const db = getDb();
     const id = uuidv4();
     const { title = 'Untitled Cover Letter', cv_id = null } = req.body;
-<<<<<<< HEAD
-    db.prepare('INSERT INTO cover_letters (id, user_id, title, cv_id, data) VALUES (?, ?, ?, ?, ?)').run(id, req.user.id, title, cv_id, JSON.stringify(DEFAULT_DATA));
-=======
-    db.prepare('INSERT INTO cover_letters (id, title, cv_id, data) VALUES (?, ?, ?, ?)').run(id, title, cv_id, JSON.stringify(DEFAULT_DATA));
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+
+    db.prepare(`
+      INSERT INTO cover_letters (id, user_id, title, cv_id, data)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(id, req.user.id, title, cv_id, JSON.stringify(DEFAULT_DATA));
+
     const row = db.prepare('SELECT * FROM cover_letters WHERE id = ?').get(id);
     res.status(201).json(parseCL(row));
   } catch (e) {
@@ -70,24 +73,27 @@ exports.update = (req, res) => {
   try {
     const db = getDb();
     const { title, cv_id, data } = req.body;
-<<<<<<< HEAD
-    const existing = db.prepare('SELECT * FROM cover_letters WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
-=======
-    const existing = db.prepare('SELECT * FROM cover_letters WHERE id = ?').get(req.params.id);
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+
+    const existing = db
+      .prepare('SELECT * FROM cover_letters WHERE id = ? AND user_id = ?')
+      .get(req.params.id, req.user.id);
+
     if (!existing) return res.status(404).json({ error: 'Cover letter not found' });
+
     db.prepare(`
       UPDATE cover_letters SET
         title = COALESCE(?, title),
         cv_id = COALESCE(?, cv_id),
         data = COALESCE(?, data)
-<<<<<<< HEAD
       WHERE id = ? AND user_id = ?
-    `).run(title || null, cv_id || null, data ? JSON.stringify(data) : null, req.params.id, req.user.id);
-=======
-      WHERE id = ?
-    `).run(title || null, cv_id || null, data ? JSON.stringify(data) : null, req.params.id);
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+    `).run(
+      title || null,
+      cv_id || null,
+      data ? JSON.stringify(data) : null,
+      req.params.id,
+      req.user.id
+    );
+
     const row = db.prepare('SELECT * FROM cover_letters WHERE id = ?').get(req.params.id);
     res.json(parseCL(row));
   } catch (e) {
@@ -98,11 +104,9 @@ exports.update = (req, res) => {
 exports.remove = (req, res) => {
   try {
     const db = getDb();
-<<<<<<< HEAD
-    db.prepare('DELETE FROM cover_letters WHERE id = ? AND user_id = ?').run(req.params.id, req.user.id);
-=======
-    db.prepare('DELETE FROM cover_letters WHERE id = ?').run(req.params.id);
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+    db.prepare('DELETE FROM cover_letters WHERE id = ? AND user_id = ?')
+      .run(req.params.id, req.user.id);
+
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: e.message });

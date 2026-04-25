@@ -20,7 +20,6 @@ function initialize() {
   const database = getDb();
 
   database.exec(`
-<<<<<<< HEAD
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       google_id TEXT UNIQUE NOT NULL,
@@ -33,10 +32,6 @@ function initialize() {
     CREATE TABLE IF NOT EXISTS cvs (
       id TEXT PRIMARY KEY,
       user_id TEXT,
-=======
-    CREATE TABLE IF NOT EXISTS cvs (
-      id TEXT PRIMARY KEY,
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
       title TEXT NOT NULL DEFAULT 'Untitled CV',
       template TEXT NOT NULL DEFAULT 'modern',
       color_theme TEXT NOT NULL DEFAULT '#2563eb',
@@ -46,29 +41,19 @@ function initialize() {
       enabled_sections TEXT NOT NULL DEFAULT '[]',
       share_token TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-<<<<<<< HEAD
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-=======
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
     );
 
     CREATE TABLE IF NOT EXISTS cover_letters (
       id TEXT PRIMARY KEY,
-<<<<<<< HEAD
       user_id TEXT,
-=======
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
       title TEXT NOT NULL DEFAULT 'Untitled Cover Letter',
       cv_id TEXT,
       data TEXT NOT NULL DEFAULT '{}',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-<<<<<<< HEAD
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-=======
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
       FOREIGN KEY (cv_id) REFERENCES cvs(id) ON DELETE SET NULL
     );
 
@@ -85,13 +70,15 @@ function initialize() {
     END;
   `);
 
-<<<<<<< HEAD
-  // Migrate existing tables to add user_id if not present
-  try { database.exec('ALTER TABLE cvs ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE'); } catch {}
-  try { database.exec('ALTER TABLE cover_letters ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE'); } catch {}
+  // Safe migrations (ignore if already exists)
+  try {
+    database.exec('ALTER TABLE cvs ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE');
+  } catch {}
 
-=======
->>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
+  try {
+    database.exec('ALTER TABLE cover_letters ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE');
+  } catch {}
+
   console.log('✅ Database initialized at', dbPath);
 }
 
