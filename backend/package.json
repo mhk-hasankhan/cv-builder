@@ -11,8 +11,17 @@
   "dependencies": {
     "better-sqlite3": "^9.4.3",
     "cors": "^2.8.5",
+<<<<<<< HEAD
+    "cv-builder": "file:..",
+    "docx": "^8.5.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.18.2",
+    "google-auth-library": "^10.6.2",
+    "jsonwebtoken": "^9.0.3",
+=======
     "docx": "^8.5.0",
     "express": "^4.18.2",
+>>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
     "multer": "^1.4.5-lts.1",
     "pdfkit": "^0.15.0",
     "uuid": "^9.0.0"

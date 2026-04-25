@@ -7,11 +7,27 @@ const api = axios.create({
   timeout: 30000
 });
 
+<<<<<<< HEAD
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('auth_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+=======
+>>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
 api.interceptors.response.use(
   r => r.data,
   e => Promise.reject(e.response?.data || e)
 )
 
+<<<<<<< HEAD
+export const authApi = {
+  googleSignIn: credential => api.post('/auth/google', { credential }),
+}
+
+=======
+>>>>>>> 1e0424acaade213ab31886d5ec68cede14bf7c9d
 export const cvsApi = {
   list: () => api.get('/cvs'),
   get: id => api.get(`/cvs/${id}`),
