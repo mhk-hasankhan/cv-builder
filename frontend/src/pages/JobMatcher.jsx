@@ -1,7 +1,8 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import {
   Upload, FileText, Briefcase, ChevronDown, ChevronUp,
-  CheckCircle2, AlertTriangle, Lightbulb, Loader2, RotateCcw, AlertCircle
+  CheckCircle2, AlertTriangle, Lightbulb, Loader2, RotateCcw,
+  AlertCircle, Trash2, Clock, ChevronRight, X
 } from 'lucide-react'
 import { jobMatchApi } from '../utils/api'
 import * as pdfjs from 'pdfjs-dist'
@@ -21,23 +22,33 @@ async function extractPdfText(file) {
   return pages.join('\n')
 }
 
-function ScoreCircle({ score }) {
-  const r = 64
+function scoreColor(score) {
+  return score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444'
+}
+
+function scoreLabel(score) {
+  return score >= 70 ? 'Strong Match' : score >= 40 ? 'Moderate Match' : 'Weak Match'
+}
+
+function ScoreCircle({ score, size = 160 }) {
+  const r = size === 160 ? 64 : 28
+  const sw = size === 160 ? 12 : 6
   const circ = 2 * Math.PI * r
   const offset = circ * (1 - score / 100)
-  const color = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444'
-  const label = score >= 70 ? 'Strong Match' : score >= 40 ? 'Moderate Match' : 'Weak Match'
+  const color = scoreColor(score)
+  const cx = size / 2
+  const cy = size / 2
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative inline-flex items-center justify-center w-40 h-40">
-        <svg width="160" height="160" viewBox="0 0 160 160" className="-rotate-90">
-          <circle cx="80" cy="80" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="12" />
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={sw} />
           <circle
-            cx="80" cy="80" r={r}
+            cx={cx} cy={cy} r={r}
             fill="none"
             stroke={color}
-            strokeWidth="12"
+            strokeWidth={sw}
             strokeLinecap="round"
             strokeDasharray={circ}
             strokeDashoffset={offset}
@@ -45,11 +56,19 @@ function ScoreCircle({ score }) {
           />
         </svg>
         <div className="absolute flex flex-col items-center select-none">
-          <span className="text-4xl font-bold leading-none" style={{ color }}>{score}</span>
-          <span className="text-sm text-zinc-400 mt-1">/ 100</span>
+          {size === 160 ? (
+            <>
+              <span className="text-4xl font-bold leading-none" style={{ color }}>{score}</span>
+              <span className="text-sm text-zinc-400 mt-1">/ 100</span>
+            </>
+          ) : (
+            <span className="text-sm font-bold leading-none" style={{ color }}>{score}</span>
+          )}
         </div>
       </div>
-      <span className="text-sm font-semibold" style={{ color }}>{label}</span>
+      {size === 160 && (
+        <span className="text-sm font-semibold" style={{ color }}>{scoreLabel(score)}</span>
+      )}
     </div>
   )
 }
@@ -73,6 +92,90 @@ function ResultCard({ icon: Icon, title, items, iconColor }) {
   )
 }
 
+function ResultPanel({ match, onClose }) {
+  return (
+    <div className="animate-fade-in">
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors mb-5"
+        >
+          <X size={14} />
+          Close
+        </button>
+      )}
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div className="bg-surface-2 border border-white/5 rounded-2xl p-8 flex flex-col items-center shrink-0 w-full md:w-52">
+          <ScoreCircle score={match.score} />
+        </div>
+        <div className="flex-1 grid gap-4">
+          <ResultCard icon={CheckCircle2} title="Strengths" items={match.strengths} iconColor="text-green-400" />
+          <ResultCard icon={AlertTriangle} title="Gaps" items={match.gaps} iconColor="text-amber-400" />
+          <ResultCard icon={Lightbulb} title="Suggestions" items={match.suggestions} iconColor="text-violet-400" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  const days = Math.floor(hrs / 24)
+  if (days < 30) return `${days}d ago`
+  return new Date(dateStr).toLocaleDateString()
+}
+
+function HistoryItem({ match, onView, onDelete, isViewing }) {
+  const color = scoreColor(match.score)
+  return (
+    <div className={`group flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer
+      ${isViewing ? 'bg-surface-3 border-white/10' : 'bg-surface-2 border-white/5 hover:border-white/10 hover:bg-surface-3'}`}
+    >
+      {/* Mini score */}
+      <ScoreCircle score={match.score} size={72} />
+
+      {/* Info */}
+      <div className="flex-1 min-w-0" onClick={onView}>
+        <p className="text-sm font-semibold text-zinc-200 truncate">{match.jobTitle}</p>
+        {match.cvFilename && (
+          <p className="text-xs text-zinc-500 truncate mt-0.5">{match.cvFilename}</p>
+        )}
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-xs font-medium" style={{ color }}>{scoreLabel(match.score)}</span>
+          <span className="text-zinc-700">·</span>
+          <span className="text-xs text-zinc-500 flex items-center gap-1">
+            <Clock size={10} />
+            {timeAgo(match.createdAt)}
+          </span>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          onClick={onView}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all"
+          title="View results"
+        >
+          <ChevronRight size={16} className={isViewing ? 'rotate-90 text-zinc-200' : ''} />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(match.id) }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+          title="Delete"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function JobMatcher() {
   const [cvText, setCvText] = useState('')
   const [jobDesc, setJobDesc] = useState('')
@@ -80,10 +183,20 @@ export default function JobMatcher() {
   const [extracting, setExtracting] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState(null)
+  const [result, setResult] = useState(null)        // current analysis result
   const [error, setError] = useState(null)
   const [dragOver, setDragOver] = useState(false)
+  const [history, setHistory] = useState([])
+  const [historyLoading, setHistoryLoading] = useState(true)
+  const [viewingMatch, setViewingMatch] = useState(null) // history item being viewed
   const inputRef = useRef(null)
+
+  useEffect(() => {
+    jobMatchApi.list()
+      .then(setHistory)
+      .catch(() => {})
+      .finally(() => setHistoryLoading(false))
+  }, [])
 
   const handleFile = useCallback(async (file) => {
     if (!file) return
@@ -122,13 +235,36 @@ export default function JobMatcher() {
     setLoading(true)
     setError(null)
     setResult(null)
+    setViewingMatch(null)
     try {
-      const data = await jobMatchApi.analyze(cvText, jobDesc)
+      const data = await jobMatchApi.analyze(cvText, jobDesc, fileName)
       setResult(data)
+      // Prepend to history
+      setHistory(prev => [{
+        id: data.id,
+        jobTitle: data.jobTitle,
+        cvFilename: fileName,
+        score: data.score,
+        strengths: data.strengths,
+        gaps: data.gaps,
+        suggestions: data.suggestions,
+        jobDescription: jobDesc,
+        createdAt: new Date().toISOString(),
+      }, ...prev])
     } catch (err) {
       setError(err.error || 'Analysis failed. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleDelete(id) {
+    try {
+      await jobMatchApi.delete(id)
+      setHistory(prev => prev.filter(m => m.id !== id))
+      if (viewingMatch?.id === id) setViewingMatch(null)
+    } catch {
+      // silent — item stays in list
     }
   }
 
@@ -139,10 +275,12 @@ export default function JobMatcher() {
     setResult(null)
     setError(null)
     setShowPreview(false)
+    setViewingMatch(null)
     if (inputRef.current) inputRef.current.value = ''
   }
 
   const canAnalyze = !!cvText && !!jobDesc.trim() && !extracting
+  const activeResult = result || viewingMatch
 
   return (
     <div className="min-h-full p-8 max-w-5xl mx-auto">
@@ -159,7 +297,7 @@ export default function JobMatcher() {
         </p>
       </div>
 
-      {/* Input section — hidden once result is shown */}
+      {/* Input section */}
       {!result && (
         <div className="grid md:grid-cols-2 gap-4 mb-4">
           {/* PDF Upload */}
@@ -167,7 +305,6 @@ export default function JobMatcher() {
             <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2 block">
               Your CV (PDF)
             </label>
-
             <div
               onClick={() => !extracting && inputRef.current?.click()}
               onDrop={handleDrop}
@@ -190,19 +327,16 @@ export default function JobMatcher() {
                 className="hidden"
                 onChange={e => handleFile(e.target.files[0])}
               />
-
               {extracting ? (
                 <>
                   <Loader2 size={28} className="text-violet-400 animate-spin" />
-                  <p className="text-sm text-zinc-400">Extracting text...</p>
+                  <p className="text-sm text-zinc-400">Extracting text…</p>
                 </>
               ) : fileName ? (
                 <>
                   <FileText size={28} className="text-green-400" />
                   <p className="text-sm text-zinc-200 font-medium break-all">{fileName}</p>
-                  <p className="text-xs text-zinc-500">
-                    {cvText.length.toLocaleString()} characters extracted
-                  </p>
+                  <p className="text-xs text-zinc-500">{cvText.length.toLocaleString()} characters extracted</p>
                   <button
                     onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
                     className="text-xs text-violet-400 hover:text-violet-300 underline"
@@ -215,15 +349,12 @@ export default function JobMatcher() {
                   <Upload size={28} className="text-zinc-600" />
                   <div>
                     <p className="text-sm text-zinc-300">Drop PDF here or click to upload</p>
-                    <p className="text-xs text-zinc-600 mt-1">
-                      Text is extracted in your browser — nothing is uploaded
-                    </p>
+                    <p className="text-xs text-zinc-600 mt-1">Text is extracted in your browser — nothing is uploaded</p>
                   </div>
                 </>
               )}
             </div>
 
-            {/* Extracted text preview toggle */}
             {cvText && (
               <button
                 onClick={() => setShowPreview(v => !v)}
@@ -256,7 +387,7 @@ export default function JobMatcher() {
         </div>
       )}
 
-      {/* Error banner */}
+      {/* Error */}
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl mb-4 text-sm text-red-400">
           <AlertCircle size={15} className="shrink-0 mt-0.5" />
@@ -264,7 +395,7 @@ export default function JobMatcher() {
         </div>
       )}
 
-      {/* CTA / Reset */}
+      {/* Actions */}
       {!result ? (
         <button
           onClick={handleAnalyze}
@@ -289,44 +420,56 @@ export default function JobMatcher() {
         <div className="mt-6 animate-pulse space-y-4">
           <div className="h-3 bg-surface-3 rounded-full w-48" />
           <div className="grid md:grid-cols-3 gap-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-44 bg-surface-2 rounded-2xl" />
-            ))}
+            {[1, 2, 3].map(i => <div key={i} className="h-44 bg-surface-2 rounded-2xl" />)}
           </div>
         </div>
       )}
 
-      {/* Results */}
-      {result && (
-        <div className="animate-fade-in">
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            {/* Score panel */}
-            <div className="bg-surface-2 border border-white/5 rounded-2xl p-8 flex flex-col items-center shrink-0 w-full md:w-52">
-              <ScoreCircle score={result.score} />
-            </div>
+      {/* Current result */}
+      {result && !viewingMatch && (
+        <ResultPanel match={result} />
+      )}
 
-            {/* Result cards */}
-            <div className="flex-1 grid gap-4">
-              <ResultCard
-                icon={CheckCircle2}
-                title="Strengths"
-                items={result.strengths}
-                iconColor="text-green-400"
-              />
-              <ResultCard
-                icon={AlertTriangle}
-                title="Gaps"
-                items={result.gaps}
-                iconColor="text-amber-400"
-              />
-              <ResultCard
-                icon={Lightbulb}
-                title="Suggestions"
-                items={result.suggestions}
-                iconColor="text-violet-400"
-              />
-            </div>
+      {/* History item view */}
+      {viewingMatch && (
+        <ResultPanel match={viewingMatch} onClose={() => setViewingMatch(null)} />
+      )}
+
+      {/* History section */}
+      {(history.length > 0 || historyLoading) && (
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock size={14} className="text-zinc-500" />
+            <h2 className="text-sm font-semibold text-zinc-400">Past Analyses</h2>
+            {history.length > 0 && (
+              <span className="text-xs text-zinc-600 bg-surface-3 px-2 py-0.5 rounded-full">
+                {history.length}
+              </span>
+            )}
           </div>
+
+          {historyLoading ? (
+            <div className="space-y-3">
+              {[1, 2].map(i => (
+                <div key={i} className="h-20 bg-surface-2 rounded-2xl animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {history.map(match => (
+                <HistoryItem
+                  key={match.id}
+                  match={match}
+                  isViewing={viewingMatch?.id === match.id}
+                  onView={() => {
+                    setResult(null)
+                    setViewingMatch(prev => prev?.id === match.id ? null : match)
+                  }}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

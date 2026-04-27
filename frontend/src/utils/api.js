@@ -61,8 +61,10 @@ export const uploadApi = {
 };
 
 export const jobMatchApi = {
-  analyze: (cvText, jobDescription) =>
-    api.post('/job-match', { cvText, jobDescription }, { timeout: 60000 }),
+  analyze: (cvText, jobDescription, cvFilename) =>
+    api.post('/job-match', { cvText, jobDescription, cvFilename }, { timeout: 60000 }),
+  list: () => api.get('/job-match'),
+  delete: (id) => api.delete(`/job-match/${id}`),
 };
 
 export const shareApi = {

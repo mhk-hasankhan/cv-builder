@@ -67,6 +67,20 @@ function initialize() {
     BEGIN
       UPDATE cover_letters SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
+
+    CREATE TABLE IF NOT EXISTS job_matches (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      job_title TEXT NOT NULL DEFAULT 'Job Match',
+      job_description TEXT NOT NULL,
+      cv_filename TEXT,
+      score INTEGER NOT NULL,
+      strengths TEXT NOT NULL DEFAULT '[]',
+      gaps TEXT NOT NULL DEFAULT '[]',
+      suggestions TEXT NOT NULL DEFAULT '[]',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
   `);
 
   // Migrate existing tables to add user_id if not present
