@@ -34,6 +34,7 @@ app.use('/api/cover-letters', require('./routes/coverLetters'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/share', require('./routes/share'));
+app.use('/api/job-match', require('./routes/jobMatch'));
 
 app.get('/api/health', (req, res) =>
   res.json({ status: 'ok', timestamp: new Date().toISOString() })

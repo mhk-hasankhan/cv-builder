@@ -4,6 +4,7 @@ import CVBuilder from './pages/CVBuilder.jsx'
 import CoverLetterBuilder from './pages/CoverLetterBuilder.jsx'
 import SharedCV from './pages/SharedCV.jsx'
 import Login from './pages/Login.jsx'
+import JobMatcher from './pages/JobMatcher.jsx'
 import Layout from './components/ui/Layout.jsx'
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx'
 
@@ -26,6 +27,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="cv/:id" element={<CVBuilder />} />
         <Route path="cover-letter/:id" element={<CoverLetterBuilder />} />
+        <Route path="job-match" element={<JobMatcher />} />
       </Route>
     </Routes>
   )

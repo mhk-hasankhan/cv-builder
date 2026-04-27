@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 
-import { LayoutDashboard, Sparkles, LogOut } from 'lucide-react'
+import { LayoutDashboard, Sparkles, LogOut, Briefcase } from 'lucide-react'
 import useAuthStore from '../../store/authStore'
 
 export default function Layout() {
@@ -21,6 +21,7 @@ export default function Layout() {
         </div>
         <nav className="flex flex-col gap-2 flex-1">
           <SideLink to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" />
+          <SideLink to="/job-match" icon={<Briefcase size={18} />} label="Job Match" />
         </nav>
 
         <div className="flex flex-col items-center gap-3">
