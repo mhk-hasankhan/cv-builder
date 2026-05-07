@@ -1,24 +1,6 @@
 import { create } from 'zustand'
 import { cvsApi } from '../utils/api.js'
-
-const DEFAULT_DATA = {
-  personal: {
-    name: '', email: '', phone: '', address: '',
-    website: '', github: '', linkedin: '', otherLinks: [], photo: ''
-  },
-  experience: [],
-  education: [],
-  skills: [],
-  projects: [],
-  certifications: [],
-  languages: [],
-  interests: [],
-  publications: [],
-  volunteering: [],
-  customSections: []
-}
-
-const DEFAULT_SECTIONS = ['personal','experience','education','skills','projects','certifications','languages']
+import { DEFAULT_DATA, DEFAULT_SECTIONS } from '../../../shared/cvDefaults.json'
 
 export const useCVStore = create((set, get) => ({
   cv: null,
