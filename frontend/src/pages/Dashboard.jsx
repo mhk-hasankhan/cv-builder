@@ -140,7 +140,7 @@ function CVList({ cvs, onDelete, onDuplicate, onEdit }) {
           <h3 className="font-medium text-white mb-1 truncate">{cv.title}</h3>
           <div className="flex items-center gap-1 text-xs text-zinc-500">
             <Clock size={11} />
-            <span>{formatDistanceToNow(new Date(cv.updated_at), { addSuffix: true })}</span>
+            <span>{formatDistanceToNow(new Date(cv.updated_at.replace(' ', 'T') + 'Z'), { addSuffix: true })}</span>
           </div>
           <div className="mt-3 flex gap-2">
             <span className="tag">{cv.template}</span>
@@ -175,7 +175,7 @@ function CLList({ cls, onDelete, onEdit }) {
           <h3 className="font-medium text-white mb-1 truncate">{cl.title}</h3>
           <div className="flex items-center gap-1 text-xs text-zinc-500">
             <Clock size={11} />
-            <span>{formatDistanceToNow(new Date(cl.updated_at), { addSuffix: true })}</span>
+            <span>{formatDistanceToNow(new Date(cl.updated_at.replace(' ', 'T') + 'Z'), { addSuffix: true })}</span>
           </div>
         </div>
       ))}
