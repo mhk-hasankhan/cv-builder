@@ -1,0 +1,19 @@
+{
+  "DEFAULT_DATA": {
+    "personal": {
+      "name": "", "email": "", "phone": "", "address": "",
+      "website": "", "github": "", "linkedin": "", "otherLinks": [], "photo": ""
+    },
+    "experience": [],
+    "education": [],
+    "skills": [],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "interests": [],
+    "publications": [],
+    "volunteering": [],
+    "customSections": []
+  },
+  "DEFAULT_SECTIONS": ["personal", "experience", "education", "skills", "projects", "certifications", "languages"]
+}

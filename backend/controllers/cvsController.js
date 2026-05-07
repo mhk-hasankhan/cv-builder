@@ -1,20 +1,6 @@
 const { getDb } = require('../database/db');
 const { v4: uuidv4 } = require('uuid');
-
-const DEFAULT_SECTIONS = ['personal', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages'];
-const DEFAULT_DATA = {
-  personal: { name: '', email: '', phone: '', address: '', website: '', github: '', linkedin: '', otherLinks: [], photo: '' },
-  experience: [],
-  education: [],
-  skills: [],
-  projects: [],
-  certifications: [],
-  languages: [],
-  interests: [],
-  publications: [],
-  volunteering: [],
-  customSections: []
-};
+const { DEFAULT_DATA, DEFAULT_SECTIONS } = require('../../shared/cvDefaults.json');
 
 function parseCV(row) {
   return {
