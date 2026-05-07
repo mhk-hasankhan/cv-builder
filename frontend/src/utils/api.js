@@ -1,4 +1,5 @@
 import axios from 'axios'
+import useAuthStore from '../store/authStore.js'
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
@@ -18,7 +19,13 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(
   r => r.data,
-  e => Promise.reject(e.response?.data || e)
+  e => {
+    if (e.response?.status === 401 && window.location.pathname !== '/login') {
+      useAuthStore.getState().logout();
+      window.location.href = '/login?session=expired';
+    }
+    return Promise.reject(e.response?.data || e);
+  }
 );
 
 // Auth APIs
