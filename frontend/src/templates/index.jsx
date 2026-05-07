@@ -1,6 +1,7 @@
 import ModernTemplate from './ModernTemplate.jsx'
 import ClassicTemplate from './ClassicTemplate.jsx'
 import SidebarTemplate from './SidebarTemplate.jsx'
+import ErrorBoundary from '../components/ui/ErrorBoundary.jsx'
 
 export const TEMPLATES = {
   modern: {
@@ -34,8 +35,10 @@ export function CVRenderer({ cv, scale = 1 }) {
   const Template = getTemplate(cv?.template).component
   if (!cv) return null
   return (
-    <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-      <Template cv={cv} />
-    </div>
+    <ErrorBoundary>
+      <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        <Template cv={cv} />
+      </div>
+    </ErrorBoundary>
   )
 }
