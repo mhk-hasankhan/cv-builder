@@ -8,7 +8,8 @@ router.post('/generate/:id', (req, res) => {
   const token = uuidv4();
   const stmt = db.prepare('UPDATE cvs SET share_token = ? WHERE id = ?');
   stmt.run(token, req.params.id);
-  res.json({ token, url: `http://localhost:5173/share/${token}` });
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  res.json({ token, url: `${frontendUrl}/share/${token}` });
 });
 
 router.get('/:token', (req, res) => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import DOMPurify from 'dompurify'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useCLStore } from '../store/clStore.js'
 import { exportApi } from '../utils/api.js'
@@ -147,7 +148,7 @@ export default function CoverLetterBuilder() {
 
             {d.body ? (
               <div className="mb-6 text-[11px] leading-relaxed text-gray-700"
-                dangerouslySetInnerHTML={{ __html: d.body }} />
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(d.body) }} />
             ) : (
               <div className="mb-6 text-gray-300 italic text-[11px]">Your letter content will appear here...</div>
             )}

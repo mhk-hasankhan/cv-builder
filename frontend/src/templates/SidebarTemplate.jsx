@@ -1,8 +1,9 @@
 import { memo } from 'react'
+import DOMPurify from 'dompurify'
 
 function HtmlContent({ html }) {
   if (!html) return null
-  return <div dangerouslySetInnerHTML={{ __html: html }} />
+  return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />
 }
 
 export default memo(function SidebarTemplate({ cv }) {
