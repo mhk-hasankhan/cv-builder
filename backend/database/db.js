@@ -83,9 +83,17 @@ function initialize() {
     );
   `);
 
-  // Migrate existing tables to add user_id if not present
-  try { database.exec('ALTER TABLE cvs ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE'); } catch {}
-  try { database.exec('ALTER TABLE cover_letters ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE'); } catch {}
+  // Migrate existing tables to add user_id if not present (idempotent)
+  for (const sql of [
+    'ALTER TABLE cvs ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE',
+    'ALTER TABLE cover_letters ADD COLUMN user_id TEXT REFERENCES users(id) ON DELETE CASCADE',
+  ]) {
+    try {
+      database.exec(sql);
+    } catch (err) {
+      if (!err.message.includes('duplicate column name')) throw err;
+    }
+  }
 
   console.log('✅ Database initialized at', dbPath);
 }
