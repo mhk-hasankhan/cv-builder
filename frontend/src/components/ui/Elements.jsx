@@ -9,7 +9,7 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
       <div className={`relative w-full ${sizes[size]} glass rounded-2xl shadow-2xl animate-slide-up`}
         onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-5 border-b border-white/5">
-          <h2 className="font-display font-semibold text-white">{title}</h2>
+          <h2 className="font-display font-semibold text-zinc-100">{title}</h2>
           {onClose && (
             <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
               <X size={16} />
@@ -82,7 +82,8 @@ export function ColorPicker({ label, value, onChange }) {
 export function Toggle({ label, checked, onChange }) {
   return (
     <label className="flex items-center gap-2 cursor-pointer">
-      <div className={`relative w-9 h-5 rounded-full transition-colors ${checked ? 'bg-indigo-600' : 'bg-white/10'}`}
+      <div className={`relative w-9 h-5 rounded-full transition-colors`}
+        style={{ backgroundColor: checked ? 'var(--accent)' : 'var(--input-bg)' }}
         onClick={() => onChange(!checked)}>
         <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${checked ? 'translate-x-4' : ''}`} />
       </div>
