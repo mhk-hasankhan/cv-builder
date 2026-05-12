@@ -101,5 +101,9 @@ export const useCVStore = create((set, get) => ({
     }
   },
 
-  reset: () => set({ cv: null, loading: false, saving: false, error: null }),
+  reset: () => {
+    const { saveTimeout } = get()
+    if (saveTimeout) clearTimeout(saveTimeout)
+    set({ cv: null, loading: false, saving: false, error: null, saveTimeout: null })
+  },
 }))

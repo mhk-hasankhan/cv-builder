@@ -60,5 +60,9 @@ export const useCLStore = create((set, get) => ({
     }
   },
 
-  reset: () => set({ cl: null, loading: false, saving: false, error: null }),
+  reset: () => {
+    const { saveTimeout } = get()
+    if (saveTimeout) clearTimeout(saveTimeout)
+    set({ cl: null, loading: false, saving: false, error: null, saveTimeout: null })
+  },
 }))
