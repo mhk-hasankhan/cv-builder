@@ -15,9 +15,10 @@ export const useCLStore = create((set, get) => ({
   saving: false,
   error: null,
   saveTimeout: null,
+  conflict: null,
 
   load: async (id) => {
-    set({ loading: true, error: null })
+    set({ loading: true, error: null, conflict: null })
     try {
       const cl = await coverLettersApi.get(id)
       set({ cl: { ...cl, data: { ...DEFAULT_DATA, ...cl.data } }, loading: false })
@@ -47,22 +48,44 @@ export const useCLStore = create((set, get) => ({
     set({ saveTimeout: timeout })
   },
 
-  save: async () => {
+  save: async (force = false) => {
     const { cl } = get()
     if (!cl) return
     set({ saving: true })
     try {
-      await coverLettersApi.update(cl.id, { title: cl.title, data: cl.data })
+      const saved = await coverLettersApi.update(cl.id, {
+        title: cl.title,
+        data: cl.data,
+        ...(force ? {} : { updated_at: cl.updated_at }),
+      })
+      set(state => ({
+        cl: state.cl ? { ...state.cl, updated_at: saved.updated_at } : null,
+        conflict: null,
+      }))
     } catch (e) {
-      console.error('Auto-save failed:', e)
+      if (e?.error === 'conflict') {
+        set({ conflict: e.current })
+      } else {
+        console.error('Auto-save failed:', e)
+      }
     } finally {
       set({ saving: false })
+    }
+  },
+
+  resolveConflict: (strategy) => {
+    const { cl, load, save } = get()
+    set({ conflict: null })
+    if (strategy === 'reload') {
+      load(cl.id)
+    } else {
+      save(true)
     }
   },
 
   reset: () => {
     const { saveTimeout } = get()
     if (saveTimeout) clearTimeout(saveTimeout)
-    set({ cl: null, loading: false, saving: false, error: null, saveTimeout: null })
+    set({ cl: null, loading: false, saving: false, error: null, saveTimeout: null, conflict: null })
   },
 }))

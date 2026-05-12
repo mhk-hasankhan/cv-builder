@@ -72,13 +72,17 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
   try {
     const db = getDb();
-    const { title, cv_id, data } = req.body;
+    const { title, cv_id, data, updated_at: clientUpdatedAt } = req.body;
 
     const existing = db
       .prepare('SELECT * FROM cover_letters WHERE id = ? AND user_id = ?')
       .get(req.params.id, req.user.id);
 
     if (!existing) return res.status(404).json({ error: 'Cover letter not found' });
+
+    if (clientUpdatedAt && new Date(existing.updated_at) > new Date(clientUpdatedAt)) {
+      return res.status(409).json({ error: 'conflict', current: parseCL(existing) });
+    }
 
     db.prepare(`
       UPDATE cover_letters SET

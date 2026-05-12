@@ -4,15 +4,17 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
   if (!open) return null
   const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl', xl: 'max-w-4xl' }
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose ?? undefined}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className={`relative w-full ${sizes[size]} glass rounded-2xl shadow-2xl animate-slide-up`}
         onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-5 border-b border-white/5">
           <h2 className="font-display font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
-            <X size={16} />
-          </button>
+          {onClose && (
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
+              <X size={16} />
+            </button>
+          )}
         </div>
         <div className="p-5">{children}</div>
       </div>
