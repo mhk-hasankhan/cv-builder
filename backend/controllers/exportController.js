@@ -3,9 +3,9 @@ const { Document, Packer, Paragraph, TextRun } = require('docx');
 const { getDb } = require('../database/db');
 const { renderPdfSections, renderDocxSections, stripHtml } = require('../sectionRenderers');
 
-function getCV(id) {
+function getCV(id, userId) {
   const db = getDb();
-  const row = db.prepare('SELECT * FROM cvs WHERE id = ?').get(id);
+  const row = db.prepare('SELECT * FROM cvs WHERE id = ? AND user_id = ?').get(id, userId);
   if (!row) return null;
   return {
     ...row,
@@ -15,16 +15,16 @@ function getCV(id) {
   };
 }
 
-function getCL(id) {
+function getCL(id, userId) {
   const db = getDb();
-  const row = db.prepare('SELECT * FROM cover_letters WHERE id = ?').get(id);
+  const row = db.prepare('SELECT * FROM cover_letters WHERE id = ? AND user_id = ?').get(id, userId);
   if (!row) return null;
   return { ...row, data: JSON.parse(row.data) };
 }
 
 // ─── PDF EXPORT ────────────────────────────────────────────────────────────────
 exports.exportPdf = (req, res) => {
-  const cv = getCV(req.params.id);
+  const cv = getCV(req.params.id, req.user.id);
   if (!cv) return res.status(404).json({ error: 'CV not found' });
 
   const { data, title, color_theme, enabled_sections, section_order } = cv;
@@ -65,7 +65,7 @@ exports.exportPdf = (req, res) => {
 
 // ─── DOCX EXPORT ──────────────────────────────────────────────────────────────
 exports.exportDocx = async (req, res) => {
-  const cv = getCV(req.params.id);
+  const cv = getCV(req.params.id, req.user.id);
   if (!cv) return res.status(404).json({ error: 'CV not found' });
 
   const { data, title, color_theme, enabled_sections } = cv;
@@ -103,7 +103,7 @@ exports.exportDocx = async (req, res) => {
 
 // ─── COVER LETTER PDF ─────────────────────────────────────────────────────────
 exports.exportCoverLetterPdf = (req, res) => {
-  const cl = getCL(req.params.id);
+  const cl = getCL(req.params.id, req.user.id);
   if (!cl) return res.status(404).json({ error: 'Cover letter not found' });
 
   const { data, title } = cl;
@@ -138,7 +138,7 @@ exports.exportCoverLetterPdf = (req, res) => {
 
 // ─── COVER LETTER DOCX ────────────────────────────────────────────────────────
 exports.exportCoverLetterDocx = async (req, res) => {
-  const cl = getCL(req.params.id);
+  const cl = getCL(req.params.id, req.user.id);
   if (!cl) return res.status(404).json({ error: 'Cover letter not found' });
 
   const { data, title } = cl;

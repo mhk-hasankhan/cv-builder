@@ -50,11 +50,16 @@ export const coverLettersApi = {
   delete: id => api.delete(`/cover-letters/${id}`),
 };
 
+function exportToken() {
+  const t = localStorage.getItem('auth_token');
+  return t ? `?token=${encodeURIComponent(t)}` : '';
+}
+
 export const exportApi = {
-  pdf: id => `${API_URL}/export/pdf/${id}`,
-  docx: id => `${API_URL}/export/docx/${id}`,
-  clPdf: id => `${API_URL}/export/cover-letter/pdf/${id}`,
-  clDocx: id => `${API_URL}/export/cover-letter/docx/${id}`,
+  pdf: id => `${API_URL}/export/pdf/${id}${exportToken()}`,
+  docx: id => `${API_URL}/export/docx/${id}${exportToken()}`,
+  clPdf: id => `${API_URL}/export/cover-letter/pdf/${id}${exportToken()}`,
+  clDocx: id => `${API_URL}/export/cover-letter/docx/${id}${exportToken()}`,
 };
 
 export const uploadApi = {
