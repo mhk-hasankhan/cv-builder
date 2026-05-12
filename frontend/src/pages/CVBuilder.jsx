@@ -50,7 +50,11 @@ export default function CVBuilder() {
 
   useEffect(() => {
     load(id)
-    return () => reset()
+    return () => {
+      const state = useCVStore.getState()
+      if (state.saveTimeout) state.save()
+      reset()
+    }
   }, [id])
 
   if (loading) return (

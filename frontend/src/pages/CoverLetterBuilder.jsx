@@ -15,7 +15,11 @@ export default function CoverLetterBuilder() {
 
   useEffect(() => {
     load(id)
-    return () => reset()
+    return () => {
+      const state = useCLStore.getState()
+      if (state.saveTimeout) state.save()
+      reset()
+    }
   }, [id])
 
   if (loading) return (
