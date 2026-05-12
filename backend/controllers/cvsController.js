@@ -76,13 +76,17 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
   try {
     const db = getDb();
-    const { title, template, color_theme, font_family, data, section_order, enabled_sections } = req.body;
+    const { title, template, color_theme, font_family, data, section_order, enabled_sections, updated_at: clientUpdatedAt } = req.body;
 
     const existing = db
       .prepare('SELECT * FROM cvs WHERE id = ? AND user_id = ?')
       .get(req.params.id, req.user.id);
 
     if (!existing) return res.status(404).json({ error: 'CV not found' });
+
+    if (clientUpdatedAt && new Date(existing.updated_at) > new Date(clientUpdatedAt)) {
+      return res.status(409).json({ error: 'conflict', current: parseCV(existing) });
+    }
 
     db.prepare(`
       UPDATE cvs SET

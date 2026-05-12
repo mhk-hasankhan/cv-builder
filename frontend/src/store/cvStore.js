@@ -8,9 +8,10 @@ export const useCVStore = create((set, get) => ({
   saving: false,
   error: null,
   saveTimeout: null,
+  conflict: null,
 
   load: async (id) => {
-    set({ loading: true, error: null })
+    set({ loading: true, error: null, conflict: null })
     try {
       const cv = await cvsApi.get(id)
       set({
@@ -80,12 +81,12 @@ export const useCVStore = create((set, get) => ({
     set({ saveTimeout: timeout })
   },
 
-  save: async () => {
+  save: async (force = false) => {
     const { cv } = get()
     if (!cv) return
     set({ saving: true })
     try {
-      await cvsApi.update(cv.id, {
+      const saved = await cvsApi.update(cv.id, {
         title: cv.title,
         template: cv.template,
         color_theme: cv.color_theme,
@@ -93,17 +94,37 @@ export const useCVStore = create((set, get) => ({
         data: cv.data,
         section_order: cv.section_order,
         enabled_sections: cv.enabled_sections,
+        ...(force ? {} : { updated_at: cv.updated_at }),
       })
+      // Sync the server's updated_at so the next save doesn't get a false conflict
+      set(state => ({
+        cv: state.cv ? { ...state.cv, updated_at: saved.updated_at } : null,
+        conflict: null,
+      }))
     } catch (e) {
-      console.error('Auto-save failed:', e)
+      if (e?.error === 'conflict') {
+        set({ conflict: e.current })
+      } else {
+        console.error('Auto-save failed:', e)
+      }
     } finally {
       set({ saving: false })
+    }
+  },
+
+  resolveConflict: (strategy) => {
+    const { cv, load, save } = get()
+    set({ conflict: null })
+    if (strategy === 'reload') {
+      load(cv.id)
+    } else {
+      save(true)
     }
   },
 
   reset: () => {
     const { saveTimeout } = get()
     if (saveTimeout) clearTimeout(saveTimeout)
-    set({ cv: null, loading: false, saving: false, error: null, saveTimeout: null })
+    set({ cv: null, loading: false, saving: false, error: null, saveTimeout: null, conflict: null })
   },
 }))
