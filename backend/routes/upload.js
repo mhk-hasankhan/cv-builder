@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const requireAuth = require('../middleware/auth');
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, '../uploads'),
@@ -21,7 +22,7 @@ const upload = multer({
   }
 });
 
-router.post('/photo', upload.single('photo'), (req, res) => {
+router.post('/photo', requireAuth, upload.single('photo'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   res.json({ url: `/uploads/${req.file.filename}` });
 });
