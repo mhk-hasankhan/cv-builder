@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { useThemeStore, applyTheme } from './store/themeStore.js'
 import Dashboard from './pages/Dashboard.jsx'
 import CVBuilder from './pages/CVBuilder.jsx'
 import CoverLetterBuilder from './pages/CoverLetterBuilder.jsx'
@@ -9,6 +11,12 @@ import Layout from './components/ui/Layout.jsx'
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx'
 
 export default function App() {
+  const { mode, accentColor } = useThemeStore()
+
+  useEffect(() => {
+    applyTheme(mode, accentColor)
+  }, [mode, accentColor])
+
   return (
     <Routes>
       {/* Public */}

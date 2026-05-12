@@ -2,26 +2,165 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────
+   THEME: CSS Custom Properties
+   ───────────────────────────────────────────── */
+
+:root,
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-base:   #0f0f13;
+  --bg-1:      #16161d;
+  --bg-2:      #1e1e28;
+  --bg-3:      #26262f;
+  --bg-4:      #2e2e38;
+
+  /* Text scale  (maps to zinc-100 → zinc-600) */
+  --t-100: #f4f4f5;
+  --t-200: #e4e4e7;
+  --t-300: #d4d4d8;
+  --t-400: #a1a1aa;
+  --t-500: #71717a;
+  --t-600: #52525b;
+
+  /* Glass / borders */
+  --glass-bg:       rgba(255,255,255,0.03);
+  --glass-hover-bg: rgba(255,255,255,0.06);
+  --border:         rgba(255,255,255,0.07);
+  --border-strong:  rgba(255,255,255,0.12);
+  --input-bg:       rgba(255,255,255,0.05);
+  --input-border:   rgba(255,255,255,0.10);
+
+  /* Accent  (overridden inline by custom theme via JS) */
+  --accent:        #6366f1;
+  --accent-hover:  #4f46e5;
+  --accent-glow:   rgba(99,102,241,0.30);
+  --accent-soft:   rgba(99,102,241,0.10);
+  --accent-border: rgba(99,102,241,0.25);
+  --accent-text:   #818cf8;
+
+  /* Scrollbar */
+  --scroll-thumb:       #3f3f46;
+  --scroll-thumb-hover: #52525b;
+
+  /* Radial decorations */
+  --grad-1: rgba(99,102,241,0.06);
+  --grad-2: rgba(16,185,129,0.04);
+
+  /* Select option bg */
+  --select-option-bg: #1e1e28;
+}
+
+[data-theme="light"] {
+  --bg-base: #f2f2f8;
+  --bg-1:    #ffffff;
+  --bg-2:    #eaeaf3;
+  --bg-3:    #dedeed;
+  --bg-4:    #d3d3e6;
+
+  --t-100: #18181b;
+  --t-200: #27272a;
+  --t-300: #3f3f46;
+  --t-400: #52525b;
+  --t-500: #71717a;
+  --t-600: #a1a1aa;
+
+  --glass-bg:       rgba(0,0,0,0.03);
+  --glass-hover-bg: rgba(0,0,0,0.05);
+  --border:         rgba(0,0,0,0.08);
+  --border-strong:  rgba(0,0,0,0.14);
+  --input-bg:       rgba(0,0,0,0.04);
+  --input-border:   rgba(0,0,0,0.12);
+
+  --accent-glow:   rgba(99,102,241,0.20);
+  --accent-text:   #4f46e5;
+
+  --scroll-thumb:       #d4d4d8;
+  --scroll-thumb-hover: #a1a1aa;
+
+  --grad-1: rgba(99,102,241,0.04);
+  --grad-2: rgba(16,185,129,0.03);
+
+  --select-option-bg: #f2f2f8;
+}
+
+/* ─────────────────────────────────────────────
+   REMAP TAILWIND UTILITIES → THEME VARS
+   These appear after Tailwind layers so they win
+   the cascade (equal specificity, later source).
+   ───────────────────────────────────────────── */
+
+/* Text */
+.text-white,
+.text-zinc-100 { color: var(--t-100); }
+.text-zinc-200 { color: var(--t-200); }
+.text-zinc-300 { color: var(--t-300); }
+.text-zinc-400 { color: var(--t-400); }
+.text-zinc-500 { color: var(--t-500); }
+.text-zinc-600 { color: var(--t-600); }
+
+/* Backgrounds (glass panels) */
+.bg-white\/3  { background-color: var(--glass-bg); }
+.bg-white\/5  { background-color: var(--input-bg); }
+.bg-white\/10 { background-color: var(--glass-hover-bg); }
+.hover\:bg-white\/5:hover  { background-color: var(--glass-hover-bg); }
+.hover\:bg-white\/10:hover { background-color: var(--glass-hover-bg); }
+
+/* Borders */
+.border-white\/5  { border-color: var(--border); }
+.border-white\/10 { border-color: var(--border-strong); }
+.hover\:border-white\/20:hover { border-color: var(--border-strong); }
+
+/* Accent color re-map (indigo → --accent) */
+.text-indigo-400 { color: var(--accent-text); }
+.text-indigo-300 { color: var(--accent-text); }
+.bg-indigo-600   { background-color: var(--accent) !important; }
+.bg-indigo-500   { background-color: var(--accent) !important; }
+.hover\:bg-indigo-500:hover { background-color: var(--accent-hover) !important; }
+.bg-indigo-500\/10  { background-color: var(--accent-soft); }
+.border-indigo-500\/20 { border-color: var(--accent-border); }
+.shadow-indigo-500\/20 { --tw-shadow-color: var(--accent-glow); }
+.shadow-indigo-500\/30 { --tw-shadow-color: var(--accent-glow); }
+.ring-indigo-500 { --tw-ring-color: var(--accent); }
+.focus\:ring-indigo-500\/50:focus { --tw-ring-color: var(--accent); opacity: 0.5; }
+.focus\:border-indigo-500\/50:focus { border-color: var(--accent); }
+.border-indigo-500 { border-color: var(--accent); }
+.text-indigo-400,
+.text-indigo-500 { color: var(--accent-text); }
+.bg-indigo-500\/10 { background-color: var(--accent-soft); }
+
+/* ─────────────────────────────────────────────
+   BASE
+   ───────────────────────────────────────────── */
+
 @layer base {
   * { box-sizing: border-box; }
 
   body {
-    @apply bg-surface text-zinc-100 font-sans antialiased;
-    background-image: radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.06) 0%, transparent 50%),
-                      radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.04) 0%, transparent 50%);
+    background-color: var(--bg-base);
+    color: var(--t-100);
+    @apply font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, var(--grad-1) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, var(--grad-2) 0%, transparent 50%);
     min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-zinc-700 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-zinc-600; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
 }
+
+/* ─────────────────────────────────────────────
+   COMPONENT CLASSES
+   ───────────────────────────────────────────── */
 
 @layer components {
   .glass {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
+    background: var(--glass-bg);
+    border: 1px solid var(--border);
     backdrop-filter: blur(8px);
   }
 
@@ -29,20 +168,32 @@
     @apply glass transition-all duration-200;
   }
   .glass-hover:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
+    background: var(--glass-hover-bg);
+    border-color: var(--border-strong);
   }
 
   .btn-primary {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm
-           bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-150
-           active:scale-95 shadow-lg shadow-indigo-500/20;
+           transition-all duration-150 active:scale-95;
+    background-color: var(--accent);
+    color: white; /* always white on accent bg */
+    box-shadow: 0 4px 14px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    background-color: var(--accent-hover);
   }
 
   .btn-secondary {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm
-           bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10
-           hover:border-white/20 transition-all duration-150 active:scale-95;
+           transition-all duration-150 active:scale-95;
+    background: var(--input-bg);
+    color: var(--t-200);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--glass-hover-bg);
+    border-color: var(--border-strong);
+    color: var(--t-100);
   }
 
   .btn-danger {
@@ -52,15 +203,21 @@
   }
 
   .input-field {
-    @apply w-full px-3 py-2 rounded-lg text-sm
-           bg-white/5 border border-white/10 text-zinc-100
-           placeholder:text-zinc-500
-           focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/50
-           transition-all duration-150;
+    @apply w-full px-3 py-2 rounded-lg text-sm transition-all duration-150;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--t-100);
+  }
+  .input-field::placeholder { color: var(--t-500); }
+  .input-field:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--accent);
+    border-color: var(--accent);
   }
 
   .label {
-    @apply text-xs font-medium text-zinc-400 mb-1.5 block uppercase tracking-wider;
+    @apply text-xs font-medium mb-1.5 block uppercase tracking-wider;
+    color: var(--t-400);
   }
 
   .section-card {
@@ -68,45 +225,71 @@
   }
 
   .tag {
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
-           bg-indigo-500/10 text-indigo-300 border border-indigo-500/20;
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    border: 1px solid var(--accent-border);
   }
 }
 
-/* TipTap editor styles */
+/* ─────────────────────────────────────────────
+   SURFACE UTILITIES
+   (bg-surface, bg-surface-1 etc. reference the
+    Tailwind config, which now reads CSS vars)
+   ───────────────────────────────────────────── */
+
+/* Transition surfaces on theme switch */
+.bg-surface, .bg-surface-1, .bg-surface-2,
+.bg-surface-3, .bg-surface-4 {
+  transition: background-color 0.2s ease;
+}
+
+/* ─────────────────────────────────────────────
+   SELECT OPTION BACKGROUND
+   ───────────────────────────────────────────── */
+option { background-color: var(--select-option-bg); }
+
+/* ─────────────────────────────────────────────
+   TIPTAP RICH TEXT EDITOR
+   ───────────────────────────────────────────── */
+
 .tiptap-editor .ProseMirror {
-  @apply min-h-[80px] p-3 rounded-lg bg-white/5 border border-white/10
-         text-sm text-zinc-200 focus:outline-none focus:ring-1 focus:ring-indigo-500/50;
+  min-height: 80px;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  font-size: 0.875rem;
+  color: var(--t-100);
   line-height: 1.6;
 }
-
-.tiptap-editor .ProseMirror ul {
-  @apply list-disc pl-5 space-y-1;
+.tiptap-editor .ProseMirror:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--accent);
+  border-color: var(--accent);
 }
-
-.tiptap-editor .ProseMirror ol {
-  @apply list-decimal pl-5 space-y-1;
-}
-
+.tiptap-editor .ProseMirror ul  { list-style: disc;    padding-left: 1.25rem; }
+.tiptap-editor .ProseMirror ol  { list-style: decimal; padding-left: 1.25rem; }
 .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  @apply text-zinc-500 pointer-events-none float-left h-0;
+  color: var(--t-500);
+  pointer-events: none;
+  float: left;
+  height: 0;
 }
 
-/* CV Preview Styles */
-.cv-preview {
-  font-family: 'DM Sans', sans-serif;
-}
+/* ─────────────────────────────────────────────
+   CV PREVIEW FONTS
+   ───────────────────────────────────────────── */
 
-.cv-preview.font-serif {
-  font-family: 'Source Serif 4', serif;
-}
+.cv-preview { font-family: 'DM Sans', sans-serif; }
+.cv-preview.font-serif  { font-family: 'Source Serif 4', serif; }
+.cv-preview.font-lora   { font-family: 'Lora', serif; }
 
-.cv-preview.font-lora {
-  font-family: 'Lora', serif;
-}
+/* ─────────────────────────────────────────────
+   PRINT
+   ───────────────────────────────────────────── */
 
-/* Print styles */
 @media print {
   .no-print { display: none !important; }
   .cv-preview { box-shadow: none !important; }
