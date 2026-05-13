@@ -18,10 +18,6 @@ async function analyzeMatch(req, res) {
   if (!cvText?.trim() || !jobDescription?.trim()) {
     return res.status(400).json({ error: 'CV text and job description are required' });
   }
-  if (!process.env.GROQ_API_KEY) {
-    return res.status(500).json({ error: 'GROQ_API_KEY not configured on the server' });
-  }
-
   const cvSnippet = cvText.trim().slice(0, 6000);
   const jdSnippet = jobDescription.trim().slice(0, 3000);
 
