@@ -40,9 +40,16 @@ exports.getOne = (req, res) => {
   }
 };
 
+const CV_LIMIT = 3;
+
 exports.create = (req, res) => {
   try {
     const db = getDb();
+    const count = db.prepare('SELECT COUNT(*) AS n FROM cvs WHERE user_id = ?').get(req.user.id).n;
+    if (count >= CV_LIMIT) {
+      return res.status(403).json({ error: 'limit_reached', message: `You can save up to ${CV_LIMIT} CVs. Delete one to create a new one.` });
+    }
+
     const id = uuidv4();
     const {
       title = 'Untitled CV',
@@ -132,6 +139,10 @@ exports.remove = (req, res) => {
 exports.duplicate = (req, res) => {
   try {
     const db = getDb();
+    const count = db.prepare('SELECT COUNT(*) AS n FROM cvs WHERE user_id = ?').get(req.user.id).n;
+    if (count >= CV_LIMIT) {
+      return res.status(403).json({ error: 'limit_reached', message: `You can save up to ${CV_LIMIT} CVs. Delete one to create a new one.` });
+    }
 
     const original = db
       .prepare('SELECT * FROM cvs WHERE id = ? AND user_id = ?')
