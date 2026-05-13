@@ -1,5 +1,12 @@
 require('dotenv').config();
 
+const REQUIRED_ENV = ['JWT_SECRET', 'GOOGLE_CLIENT_ID', 'GROQ_API_KEY'];
+const missing = REQUIRED_ENV.filter(k => !process.env[k]);
+if (missing.length) {
+  console.error(`Missing required environment variables: ${missing.join(', ')}`);
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
