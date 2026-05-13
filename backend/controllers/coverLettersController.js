@@ -51,9 +51,16 @@ exports.getOne = (req, res) => {
   }
 };
 
+const CL_LIMIT = 3;
+
 exports.create = (req, res) => {
   try {
     const db = getDb();
+    const count = db.prepare('SELECT COUNT(*) AS n FROM cover_letters WHERE user_id = ?').get(req.user.id).n;
+    if (count >= CL_LIMIT) {
+      return res.status(403).json({ error: 'limit_reached', message: `You can save up to ${CL_LIMIT} cover letters. Delete one to create a new one.` });
+    }
+
     const id = uuidv4();
     const { title = 'Untitled Cover Letter', cv_id = null } = req.body;
 

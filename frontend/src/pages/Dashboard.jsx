@@ -4,6 +4,8 @@ import { cvsApi, coverLettersApi } from '../utils/api.js'
 import { Plus, FileText, Mail, Copy, Trash2, Edit3, Clock, Sparkles, ChevronRight } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
+const LIMIT = 3
+
 export default function Dashboard() {
   const [cvs, setCvs] = useState([])
   const [cls, setCls] = useState([])
@@ -17,12 +19,17 @@ export default function Dashboard() {
       .finally(() => setLoading(false))
   }, [])
 
+  const atCvLimit = cvs.length >= LIMIT
+  const atClLimit = cls.length >= LIMIT
+
   const createCV = async () => {
+    if (atCvLimit) return
     const cv = await cvsApi.create({ title: 'Untitled CV' })
     navigate(`/cv/${cv.id}`)
   }
 
   const createCL = async () => {
+    if (atClLimit) return
     const cl = await coverLettersApi.create({ title: 'Untitled Cover Letter' })
     navigate(`/cover-letter/${cl.id}`)
   }
@@ -36,6 +43,7 @@ export default function Dashboard() {
 
   const duplicateCV = async (id, e) => {
     e.stopPropagation()
+    if (atCvLimit) return
     const newCV = await cvsApi.duplicate(id)
     setCvs([newCV, ...cvs])
   }
@@ -61,26 +69,36 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        <button onClick={createCV}
-          className="glass-hover rounded-2xl p-6 text-left group transition-all duration-200 hover:border-indigo-500/30">
+        <button onClick={createCV} disabled={atCvLimit}
+          className={`glass-hover rounded-2xl p-6 text-left group transition-all duration-200 ${atCvLimit ? 'opacity-50 cursor-not-allowed' : 'hover:border-indigo-500/30'}`}>
           <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
             <FileText size={22} className="text-indigo-400" />
           </div>
           <h3 className="font-display font-semibold text-white mb-1 flex items-center gap-2">
-            New CV <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+            New CV
+            {atCvLimit
+              ? <span className="text-[11px] font-normal text-amber-400 ml-1">{LIMIT}/{LIMIT} used</span>
+              : <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
           </h3>
-          <p className="text-sm text-zinc-500">Build a professional curriculum vitae with multiple templates</p>
+          <p className="text-sm text-zinc-500">
+            {atCvLimit ? 'Delete an existing CV to create a new one.' : 'Build a professional curriculum vitae with multiple templates'}
+          </p>
         </button>
 
-        <button onClick={createCL}
-          className="glass-hover rounded-2xl p-6 text-left group transition-all duration-200 hover:border-emerald-500/30">
+        <button onClick={createCL} disabled={atClLimit}
+          className={`glass-hover rounded-2xl p-6 text-left group transition-all duration-200 ${atClLimit ? 'opacity-50 cursor-not-allowed' : 'hover:border-emerald-500/30'}`}>
           <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors">
             <Mail size={22} className="text-emerald-400" />
           </div>
           <h3 className="font-display font-semibold text-white mb-1 flex items-center gap-2">
-            New Cover Letter <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+            New Cover Letter
+            {atClLimit
+              ? <span className="text-[11px] font-normal text-amber-400 ml-1">{LIMIT}/{LIMIT} used</span>
+              : <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
           </h3>
-          <p className="text-sm text-zinc-500">Write a compelling cover letter tailored to your application</p>
+          <p className="text-sm text-zinc-500">
+            {atClLimit ? 'Delete an existing cover letter to create a new one.' : 'Write a compelling cover letter tailored to your application'}
+          </p>
         </button>
       </div>
 
@@ -100,7 +118,7 @@ export default function Dashboard() {
           {[1,2,3].map(i => <div key={i} className="glass rounded-xl h-32 animate-pulse" />)}
         </div>
       ) : activeTab === 'cvs' ? (
-        <CVList cvs={cvs} onDelete={deleteCV} onDuplicate={duplicateCV} onEdit={id => navigate(`/cv/${id}`)} />
+        <CVList cvs={cvs} atLimit={atCvLimit} onDelete={deleteCV} onDuplicate={duplicateCV} onEdit={id => navigate(`/cv/${id}`)} />
       ) : (
         <CLList cls={cls} onDelete={deleteCL} onEdit={id => navigate(`/cover-letter/${id}`)} />
       )}
@@ -108,7 +126,7 @@ export default function Dashboard() {
   )
 }
 
-function CVList({ cvs, onDelete, onDuplicate, onEdit }) {
+function CVList({ cvs, atLimit, onDelete, onDuplicate, onEdit }) {
   if (!cvs.length) return (
     <div className="glass rounded-2xl p-12 text-center">
       <FileText size={32} className="text-zinc-600 mx-auto mb-3" />
@@ -127,10 +145,12 @@ function CVList({ cvs, onDelete, onDuplicate, onEdit }) {
               <FileText size={18} style={{ color: cv.color_theme }} />
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={e => onDuplicate(cv.id, e)}
-                className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-500 hover:text-zinc-200 transition-colors">
-                <Copy size={14} />
-              </button>
+              {!atLimit && (
+                <button onClick={e => onDuplicate(cv.id, e)}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-500 hover:text-zinc-200 transition-colors">
+                  <Copy size={14} />
+                </button>
+              )}
               <button onClick={e => onDelete(cv.id, e)}
                 className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-colors">
                 <Trash2 size={14} />
