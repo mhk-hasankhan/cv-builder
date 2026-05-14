@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import { cvsApi, coverLettersApi } from '../utils/api'
 import './GetStarted.css'
 
 const TRACKS = [
@@ -14,7 +13,6 @@ export default function GetStarted() {
   const { user, logout, init } = useAuthStore()
   const navigate = useNavigate()
   const [activeTrack, setActiveTrack] = useState('cv')
-  const [busy, setBusy] = useState(false)
   const [toast, setToast] = useState('')
   const toastTimer = useRef(null)
 
@@ -30,30 +28,9 @@ export default function GetStarted() {
     toastTimer.current = setTimeout(() => setToast(''), 1800)
   }
 
-  async function handleGetStarted() {
+  function handleGetStarted() {
     if (!user) { navigate('/login'); return }
-    if (busy) return
-
-    const track = TRACKS.find(t => t.id === activeTrack)
-    if (track?.disabled) {
-      flash('Résumé import is coming soon.')
-      return
-    }
-
-    setBusy(true)
-    try {
-      if (activeTrack === 'cv') {
-        const cv = await cvsApi.create({ title: 'Untitled CV' })
-        navigate(`/cv/${cv.id}`)
-      } else if (activeTrack === 'cl') {
-        const cl = await coverLettersApi.create({ title: 'Untitled Cover Letter' })
-        navigate(`/cover-letter/${cl.id}`)
-      }
-    } catch (e) {
-      console.error('Create failed', e)
-      flash(e?.error || 'Could not create document. Please try again.')
-      setBusy(false)
-    }
+    navigate('/dashboard')
   }
 
   function handleLogout() {
@@ -143,8 +120,8 @@ export default function GetStarted() {
             </p>
 
             <div className="gs-cta-row">
-              <button className="gs-btn-primary" type="button" onClick={handleGetStarted} disabled={busy}>
-                <span>{busy ? 'Creating…' : 'Get started'}</span>
+              <button className="gs-btn-primary" type="button" onClick={handleGetStarted}>
+                <span>Get started</span>
                 <span className="gs-arrow" aria-hidden="true">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14" />
@@ -179,7 +156,7 @@ export default function GetStarted() {
                   disabled={track.disabled}
                   className={`gs-track${activeTrack === track.id ? ' gs-active' : ''}`}
                   onClick={() => {
-                    if (track.disabled) { flash('Résumé import is coming soon.'); return }
+                    if (track.disabled) { flash('Résumé import is coming soon — pick another track.'); return }
                     setActiveTrack(track.id)
                   }}
                 >

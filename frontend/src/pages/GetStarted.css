@@ -617,6 +617,347 @@
   border-bottom-color: var(--line-strong);
 }
 
+/* ---------- Dashboard surface (.gs-dash) ----------
+   Same design tokens as .gs-page but flows inside the
+   Layout component (no position:fixed, supports scroll). */
+
+.gs-dash {
+  --ink: #f6f4ef;
+  --ink-dim: rgba(246, 244, 239, 0.72);
+  --ink-mute: rgba(246, 244, 239, 0.52);
+  --line: rgba(246, 244, 239, 0.18);
+  --line-strong: rgba(246, 244, 239, 0.32);
+  --accent: oklch(0.78 0.09 70);
+  --accent-soft: rgba(217, 170, 120, 0.10);
+  --accent-border: rgba(217, 170, 120, 0.28);
+
+  position: relative;
+  min-height: 100%;
+  background: #0b0a08;
+  color: var(--ink);
+  font-family: "Helvetica Neue", Helvetica, "Arial", sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+.gs-dash *, .gs-dash *::before, .gs-dash *::after { box-sizing: border-box; }
+
+/* Grain overlay sits above the background but below content */
+.gs-dash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+/* Warm radial wash */
+.gs-dash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(80% 50% at 10% 0%, rgba(217,170,120,0.10) 0%, rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(11,10,8,0) 0%, rgba(11,10,8,0.6) 100%);
+}
+
+.gs-dash .gs-dash-shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 40px 64px;
+}
+
+/* Hero */
+.gs-dash .gs-dash-hero {
+  margin-bottom: 44px;
+}
+.gs-dash .gs-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 20px;
+}
+.gs-dash .gs-eyebrow .gs-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(217,170,120,0.15);
+}
+.gs-dash .gs-dash-title {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+.gs-dash .gs-dash-title .gs-serif {
+  font-family: "Instrument Serif", serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.gs-dash .gs-dash-title .gs-line { display: block; }
+.gs-dash .gs-dash-sub {
+  font-size: 15px;
+  color: var(--ink-dim);
+  line-height: 1.55;
+  max-width: 56ch;
+  margin: 0;
+}
+
+/* Quick action cards */
+.gs-dash .gs-action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 36px 0 44px;
+}
+.gs-dash .gs-action-card {
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color .2s ease, background .2s ease, transform .15s ease;
+}
+.gs-dash .gs-action-card:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  background: rgba(255,255,255,0.06);
+  transform: translateY(-1px);
+}
+.gs-dash .gs-action-card:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.gs-dash .gs-action-card .gs-num {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--line);
+  display: grid; place-items: center;
+  color: var(--ink);
+}
+.gs-dash .gs-action-card .gs-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.gs-dash .gs-action-card .gs-t {
+  font-size: 16px;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.gs-dash .gs-action-card .gs-t .gs-limit {
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+.gs-dash .gs-action-card .gs-s {
+  font-size: 12.5px;
+  color: var(--ink-mute);
+}
+.gs-dash .gs-action-card .gs-time {
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Tabs */
+.gs-dash .gs-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.025);
+  margin-bottom: 22px;
+}
+.gs-dash .gs-tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-mute);
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: color .15s ease, background .15s ease;
+}
+.gs-dash .gs-tab:hover { color: var(--ink-dim); }
+.gs-dash .gs-tab.gs-active {
+  background: rgba(255,255,255,0.08);
+  color: var(--ink);
+}
+
+/* Document grid */
+.gs-dash .gs-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.gs-dash .gs-doc-card {
+  position: relative;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .15s ease;
+}
+.gs-dash .gs-doc-card:hover {
+  border-color: var(--line-strong);
+  background: rgba(255,255,255,0.06);
+  transform: translateY(-1px);
+}
+.gs-dash .gs-doc-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  margin-bottom: 14px;
+}
+.gs-dash .gs-doc-title {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 6px;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-dash .gs-doc-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0.02em;
+}
+.gs-dash .gs-doc-tags {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gs-dash .gs-doc-tag {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.gs-dash .gs-doc-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+.gs-dash .gs-doc-card:hover .gs-doc-actions { opacity: 1; }
+.gs-dash .gs-icon-btn {
+  appearance: none;
+  width: 28px; height: 28px;
+  border: 1px solid var(--line);
+  background: rgba(11,10,8,0.6);
+  color: var(--ink-dim);
+  border-radius: 8px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.gs-dash .gs-icon-btn:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: rgba(255,255,255,0.08);
+}
+.gs-dash .gs-icon-btn.gs-danger:hover {
+  color: #f4a4a4;
+  border-color: rgba(244,164,164,0.35);
+  background: rgba(244,164,164,0.08);
+}
+
+/* Empty + loading */
+.gs-dash .gs-empty {
+  padding: 56px 24px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  text-align: center;
+  color: var(--ink-dim);
+}
+.gs-dash .gs-empty .gs-empty-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--line);
+  margin-bottom: 14px;
+  color: var(--ink-mute);
+}
+.gs-dash .gs-empty-title {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+.gs-dash .gs-empty-sub {
+  font-size: 13px;
+  color: var(--ink-mute);
+  margin: 0;
+}
+.gs-dash .gs-skeleton {
+  height: 130px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: linear-gradient(120deg, rgba(255,255,255,0.02) 30%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 70%);
+  background-size: 200% 100%;
+  animation: gsShimmer 1.4s ease-in-out infinite;
+}
+@keyframes gsShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* Responsive */
 @media (max-width: 960px) {
   .gs-page .gs-shell { padding: 22px 22px 26px; }
@@ -625,10 +966,124 @@
   .gs-page .gs-auth-card { justify-self: stretch; width: 100%; }
   .gs-page .gs-stats { display: none; }
   .gs-page nav.gs-top-nav { display: none; }
+
+  .gs-dash .gs-dash-shell { padding: 36px 24px 48px; }
+  .gs-dash .gs-action-grid { grid-template-columns: 1fr; }
+  .gs-dash .gs-doc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   .gs-page h1.gs-headline { font-size: clamp(44px, 11vw, 64px); }
   .gs-page .gs-lede { font-size: 15px; margin-bottom: 28px; }
   .gs-page .gs-user-pill { display: none; }
   .gs-page .gs-meta { gap: 12px; }
+
+  .gs-dash .gs-doc-grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────────────────────────────────────────
+   LIGHT THEME — Dashboard only
+   GetStarted and Login pages have no theme
+   switcher and stay dark always.
+   ───────────────────────────────────────────── */
+
+[data-theme="light"] .gs-dash {
+  --ink: #1c1a16;
+  --ink-dim: rgba(28, 26, 22, 0.70);
+  --ink-mute: rgba(28, 26, 22, 0.45);
+  --line: rgba(28, 26, 22, 0.10);
+  --line-strong: rgba(28, 26, 22, 0.20);
+  --accent: oklch(0.50 0.11 70);
+  --accent-soft: rgba(160, 100, 30, 0.08);
+  --accent-border: rgba(160, 100, 30, 0.22);
+  background: #f5f2ec;
+}
+
+/* Lighten the grain + warm wash for light mode */
+[data-theme="light"] .gs-dash::before { opacity: 0.02; }
+[data-theme="light"] .gs-dash::after {
+  background:
+    radial-gradient(80% 50% at 10% 0%, rgba(180,140,80,0.07) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 0%, rgba(245,242,236,0.5) 100%);
+}
+
+/* Action cards */
+[data-theme="light"] .gs-dash .gs-action-card {
+  background: rgba(255,255,255,0.75);
+  border-color: var(--line);
+}
+[data-theme="light"] .gs-dash .gs-action-card:hover:not(:disabled) {
+  background: rgba(255,255,255,0.95);
+  border-color: var(--line-strong);
+}
+[data-theme="light"] .gs-dash .gs-action-card .gs-num {
+  background: rgba(0,0,0,0.04);
+  border-color: var(--line);
+}
+
+/* Tabs */
+[data-theme="light"] .gs-dash .gs-tabs {
+  background: rgba(0,0,0,0.04);
+  border-color: var(--line);
+}
+[data-theme="light"] .gs-dash .gs-tab { color: var(--ink-mute); }
+[data-theme="light"] .gs-dash .gs-tab:hover { color: var(--ink-dim); }
+[data-theme="light"] .gs-dash .gs-tab.gs-active {
+  background: rgba(0,0,0,0.07);
+  color: var(--ink);
+}
+
+/* Document cards */
+[data-theme="light"] .gs-dash .gs-doc-card {
+  background: rgba(255,255,255,0.70);
+  border-color: var(--line);
+}
+[data-theme="light"] .gs-dash .gs-doc-card:hover {
+  background: rgba(255,255,255,0.95);
+  border-color: var(--line-strong);
+}
+
+/* Doc tag */
+[data-theme="light"] .gs-dash .gs-doc-tag {
+  background: rgba(0,0,0,0.04);
+  border-color: var(--line);
+  color: var(--ink-dim);
+}
+
+/* Icon buttons */
+[data-theme="light"] .gs-dash .gs-icon-btn {
+  background: rgba(255,255,255,0.80);
+  border-color: var(--line);
+  color: var(--ink-dim);
+}
+[data-theme="light"] .gs-dash .gs-icon-btn:hover {
+  background: rgba(255,255,255,1);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+[data-theme="light"] .gs-dash .gs-icon-btn.gs-danger:hover {
+  color: #c0392b;
+  border-color: rgba(192,57,43,0.30);
+  background: rgba(192,57,43,0.06);
+}
+
+/* Empty state */
+[data-theme="light"] .gs-dash .gs-empty {
+  background: rgba(0,0,0,0.02);
+  border-color: var(--line-strong);
+}
+[data-theme="light"] .gs-dash .gs-empty .gs-empty-icon {
+  background: rgba(0,0,0,0.04);
+  border-color: var(--line);
+}
+
+/* Skeleton shimmer — use dark tones on light bg */
+[data-theme="light"] .gs-dash .gs-skeleton {
+  border-color: var(--line);
+  background: linear-gradient(
+    120deg,
+    rgba(0,0,0,0.04) 30%,
+    rgba(0,0,0,0.09) 50%,
+    rgba(0,0,0,0.04) 70%
+  );
+  background-size: 200% 100%;
 }
