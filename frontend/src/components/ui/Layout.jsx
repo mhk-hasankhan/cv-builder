@@ -21,7 +21,7 @@ export default function Layout() {
           <Sparkles size={16} className="text-[white]" />
         </div>
         <nav className="flex flex-col gap-2 flex-1">
-          <SideLink to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" />
+          <SideLink to="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" />
           <SideLink to="/job-match" icon={<Briefcase size={18} />} label="Job Match" />
         </nav>
 

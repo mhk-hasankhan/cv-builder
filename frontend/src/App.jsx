@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { useThemeStore, applyTheme } from './store/themeStore.js'
+import GetStarted from './pages/GetStarted.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import CVBuilder from './pages/CVBuilder.jsx'
 import CoverLetterBuilder from './pages/CoverLetterBuilder.jsx'
@@ -20,22 +21,22 @@ export default function App() {
   return (
     <Routes>
       {/* Public */}
+      <Route path="/" element={<GetStarted />} />
       <Route path="/login" element={<Login />} />
       <Route path="/share/:token" element={<SharedCV />} />
 
       {/* Protected */}
       <Route
-        path="/"
         element={
           <ProtectedRoute>
             <Layout />
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
-        <Route path="cv/:id" element={<CVBuilder />} />
-        <Route path="cover-letter/:id" element={<CoverLetterBuilder />} />
-        <Route path="job-match" element={<JobMatcher />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/cv/:id" element={<CVBuilder />} />
+        <Route path="/cover-letter/:id" element={<CoverLetterBuilder />} />
+        <Route path="/job-match" element={<JobMatcher />} />
       </Route>
     </Routes>
   )
