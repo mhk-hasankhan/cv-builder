@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cvsApi, coverLettersApi } from '../utils/api.js'
-import { Plus, FileText, Mail, Copy, Trash2, Edit3, Clock, Sparkles, ChevronRight } from 'lucide-react'
+import { FileText, Mail, Copy, Trash2, Clock } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import './GetStarted.css'
 
 const LIMIT = 3
 
@@ -56,114 +57,147 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen p-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles size={18} className="text-indigo-400" />
-          <span className="text-xs font-medium text-indigo-400 uppercase tracking-widest">CV Builder</span>
-        </div>
-        <h1 className="font-display text-4xl font-bold text-white mb-2">Your Documents</h1>
-        <p className="text-zinc-400">Craft professional CVs and cover letters that stand out.</p>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        <button onClick={createCV} disabled={atCvLimit}
-          className={`glass-hover rounded-2xl p-6 text-left group transition-all duration-200 ${atCvLimit ? 'opacity-50 cursor-not-allowed' : 'hover:border-indigo-500/30'}`}>
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
-            <FileText size={22} className="text-indigo-400" />
+    <div className="gs-dash">
+      <div className="gs-dash-shell">
+        {/* Hero */}
+        <section className="gs-dash-hero">
+          <div className="gs-eyebrow">
+            <span className="gs-dot" />
+            <span>Your library</span>
           </div>
-          <h3 className="font-display font-semibold text-white mb-1 flex items-center gap-2">
-            New CV
-            {atCvLimit
-              ? <span className="text-[11px] font-normal text-amber-400 ml-1">{LIMIT}/{LIMIT} used</span>
-              : <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
-          </h3>
-          <p className="text-sm text-zinc-500">
-            {atCvLimit ? 'Delete an existing CV to create a new one.' : 'Build a professional curriculum vitae with multiple templates'}
+          <h1 className="gs-dash-title">
+            <span className="gs-line">Your documents,</span>
+            <span className="gs-line">always <span className="gs-serif">in progress.</span></span>
+          </h1>
+          <p className="gs-dash-sub">
+            Craft polished CVs and cover letters that stand out — every draft saved, every version yours.
           </p>
-        </button>
+        </section>
 
-        <button onClick={createCL} disabled={atClLimit}
-          className={`glass-hover rounded-2xl p-6 text-left group transition-all duration-200 ${atClLimit ? 'opacity-50 cursor-not-allowed' : 'hover:border-emerald-500/30'}`}>
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors">
-            <Mail size={22} className="text-emerald-400" />
-          </div>
-          <h3 className="font-display font-semibold text-white mb-1 flex items-center gap-2">
-            New Cover Letter
-            {atClLimit
-              ? <span className="text-[11px] font-normal text-amber-400 ml-1">{LIMIT}/{LIMIT} used</span>
-              : <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
-          </h3>
-          <p className="text-sm text-zinc-500">
-            {atClLimit ? 'Delete an existing cover letter to create a new one.' : 'Write a compelling cover letter tailored to your application'}
-          </p>
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 p-1 glass rounded-xl w-fit">
-        {[['cvs', `CVs (${cvs.length})`], ['cls', `Cover Letters (${cls.length})`]].map(([key, label]) => (
-          <button key={key} onClick={() => setActiveTab(key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === key ? 'bg-white/10 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>
-            {label}
+        {/* Quick actions */}
+        <div className="gs-action-grid">
+          <button
+            type="button"
+            onClick={createCV}
+            disabled={atCvLimit}
+            className="gs-action-card"
+            aria-label="Create a new CV"
+          >
+            <span className="gs-num"><FileText size={20} /></span>
+            <span className="gs-label">
+              <span className="gs-t">
+                New CV
+                {atCvLimit && <span className="gs-limit">{LIMIT}/{LIMIT} used</span>}
+              </span>
+              <span className="gs-s">
+                {atCvLimit ? 'Delete an existing CV to create a new one.' : 'Build a professional CV with multiple templates'}
+              </span>
+            </span>
+            <span className="gs-time">~8 min</span>
           </button>
-        ))}
-      </div>
 
-      {/* List */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1,2,3].map(i => <div key={i} className="glass rounded-xl h-32 animate-pulse" />)}
+          <button
+            type="button"
+            onClick={createCL}
+            disabled={atClLimit}
+            className="gs-action-card"
+            aria-label="Create a new cover letter"
+          >
+            <span className="gs-num"><Mail size={20} /></span>
+            <span className="gs-label">
+              <span className="gs-t">
+                New cover letter
+                {atClLimit && <span className="gs-limit">{LIMIT}/{LIMIT} used</span>}
+              </span>
+              <span className="gs-s">
+                {atClLimit ? 'Delete an existing cover letter to create a new one.' : 'Pair a tailored letter to your application'}
+              </span>
+            </span>
+            <span className="gs-time">~4 min</span>
+          </button>
         </div>
-      ) : activeTab === 'cvs' ? (
-        <CVList cvs={cvs} atLimit={atCvLimit} onDelete={deleteCV} onDuplicate={duplicateCV} onEdit={id => navigate(`/cv/${id}`)} />
-      ) : (
-        <CLList cls={cls} onDelete={deleteCL} onEdit={id => navigate(`/cover-letter/${id}`)} />
-      )}
+
+        {/* Tabs */}
+        <div className="gs-tabs" role="tablist">
+          {[['cvs', `CVs (${cvs.length})`], ['cls', `Cover letters (${cls.length})`]].map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === key}
+              onClick={() => setActiveTab(key)}
+              className={`gs-tab${activeTab === key ? ' gs-active' : ''}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* List */}
+        {loading ? (
+          <div className="gs-doc-grid">
+            {[1, 2, 3].map(i => <div key={i} className="gs-skeleton" />)}
+          </div>
+        ) : activeTab === 'cvs' ? (
+          <CVList cvs={cvs} atLimit={atCvLimit} onDelete={deleteCV} onDuplicate={duplicateCV} onEdit={id => navigate(`/cv/${id}`)} />
+        ) : (
+          <CLList cls={cls} onDelete={deleteCL} onEdit={id => navigate(`/cover-letter/${id}`)} />
+        )}
+      </div>
     </div>
   )
 }
 
 function CVList({ cvs, atLimit, onDelete, onDuplicate, onEdit }) {
   if (!cvs.length) return (
-    <div className="glass rounded-2xl p-12 text-center">
-      <FileText size={32} className="text-zinc-600 mx-auto mb-3" />
-      <p className="text-zinc-400 font-medium">No CVs yet</p>
-      <p className="text-zinc-600 text-sm mt-1">Create your first CV to get started</p>
+    <div className="gs-empty">
+      <div className="gs-empty-icon"><FileText size={20} /></div>
+      <p className="gs-empty-title">No CVs yet</p>
+      <p className="gs-empty-sub">Create your first CV to get started.</p>
     </div>
   )
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="gs-doc-grid">
       {cvs.map(cv => (
-        <div key={cv.id} onClick={() => onEdit(cv.id)}
-          className="glass-hover rounded-xl p-5 cursor-pointer group animate-fade-in">
-          <div className="flex items-start justify-between mb-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{ background: `${cv.color_theme}20`, border: `1px solid ${cv.color_theme}40` }}>
-              <FileText size={18} style={{ color: cv.color_theme }} />
-            </div>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              {!atLimit && (
-                <button onClick={e => onDuplicate(cv.id, e)}
-                  className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-500 hover:text-zinc-200 transition-colors">
-                  <Copy size={14} />
-                </button>
-              )}
-              <button onClick={e => onDelete(cv.id, e)}
-                className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-colors">
-                <Trash2 size={14} />
-              </button>
-            </div>
+        <div key={cv.id} onClick={() => onEdit(cv.id)} className="gs-doc-card" role="button" tabIndex={0}>
+          <div
+            className="gs-doc-icon"
+            style={{
+              background: `${cv.color_theme}1f`,
+              border: `1px solid ${cv.color_theme}55`,
+            }}
+          >
+            <FileText size={18} style={{ color: cv.color_theme }} />
           </div>
-          <h3 className="font-medium text-white mb-1 truncate">{cv.title}</h3>
-          <div className="flex items-center gap-1 text-xs text-zinc-500">
+
+          <h3 className="gs-doc-title">{cv.title}</h3>
+          <div className="gs-doc-meta">
             <Clock size={11} />
             <span>{formatDistanceToNow(new Date(cv.updated_at.replace(' ', 'T') + 'Z'), { addSuffix: true })}</span>
           </div>
-          <div className="mt-3 flex gap-2">
-            <span className="tag">{cv.template}</span>
+          <div className="gs-doc-tags">
+            <span className="gs-doc-tag">{cv.template}</span>
+          </div>
+
+          <div className="gs-doc-actions">
+            {!atLimit && (
+              <button
+                type="button"
+                onClick={e => onDuplicate(cv.id, e)}
+                className="gs-icon-btn"
+                aria-label="Duplicate CV"
+              >
+                <Copy size={13} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={e => onDelete(cv.id, e)}
+              className="gs-icon-btn gs-danger"
+              aria-label="Delete CV"
+            >
+              <Trash2 size={13} />
+            </button>
           </div>
         </div>
       ))}
@@ -173,29 +207,41 @@ function CVList({ cvs, atLimit, onDelete, onDuplicate, onEdit }) {
 
 function CLList({ cls, onDelete, onEdit }) {
   if (!cls.length) return (
-    <div className="glass rounded-2xl p-12 text-center">
-      <Mail size={32} className="text-zinc-600 mx-auto mb-3" />
-      <p className="text-zinc-400 font-medium">No cover letters yet</p>
+    <div className="gs-empty">
+      <div className="gs-empty-icon"><Mail size={20} /></div>
+      <p className="gs-empty-title">No cover letters yet</p>
+      <p className="gs-empty-sub">Pair a tailored letter to your next application.</p>
     </div>
   )
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="gs-doc-grid">
       {cls.map(cl => (
-        <div key={cl.id} onClick={() => onEdit(cl.id)}
-          className="glass-hover rounded-xl p-5 cursor-pointer group animate-fade-in">
-          <div className="flex items-start justify-between mb-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <Mail size={18} className="text-emerald-400" />
-            </div>
-            <button onClick={e => { e.stopPropagation(); onDelete(cl.id, e) }}
-              className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-all">
-              <Trash2 size={14} />
-            </button>
+        <div key={cl.id} onClick={() => onEdit(cl.id)} className="gs-doc-card" role="button" tabIndex={0}>
+          <div
+            className="gs-doc-icon"
+            style={{
+              background: 'rgba(217,170,120,0.12)',
+              border: '1px solid rgba(217,170,120,0.30)',
+            }}
+          >
+            <Mail size={18} style={{ color: 'oklch(0.78 0.09 70)' }} />
           </div>
-          <h3 className="font-medium text-white mb-1 truncate">{cl.title}</h3>
-          <div className="flex items-center gap-1 text-xs text-zinc-500">
+
+          <h3 className="gs-doc-title">{cl.title}</h3>
+          <div className="gs-doc-meta">
             <Clock size={11} />
             <span>{formatDistanceToNow(new Date(cl.updated_at.replace(' ', 'T') + 'Z'), { addSuffix: true })}</span>
+          </div>
+
+          <div className="gs-doc-actions">
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); onDelete(cl.id, e) }}
+              className="gs-icon-btn gs-danger"
+              aria-label="Delete cover letter"
+            >
+              <Trash2 size={13} />
+            </button>
           </div>
         </div>
       ))}
